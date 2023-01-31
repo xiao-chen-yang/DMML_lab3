@@ -1,9 +1,0 @@
-# Introduction {-#intro}
-
-In the lectures $R^2$ was used to measure the goodness-of-fit of the chosen model, and the idea of residuals was introduced. In today's practical we will use RStudio to find values of $R^2$, and use residual plots to examine the assumptions underlying the linear model.
-
-Similarly to previous practicals, we will use the `lm()` command to fit linear models. We will obtain residuals and standardised residuals from linear models that allow us to check assumptions. We will check our assumptions using:
-
-(i) plots of residuals versus fitted values;
-(ii) Normal Q-Q plots;
-(iii) histograms of the residuals.
