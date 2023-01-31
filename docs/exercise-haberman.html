@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>STATS5099 Data Mining and Machine Learning</title>
-  <meta name="description" content="STATS5099 Data Mining and Machine Learning" />
+  <title>4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning</title>
+  <meta name="description" content="4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning" />
   <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="STATS5099 Data Mining and Machine Learning" />
+  <meta property="og:title" content="4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="STATS5099 Data Mining and Machine Learning" />
+  <meta name="twitter:title" content="4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning" />
   
   
   
@@ -28,8 +28,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
+<link rel="prev" href="lda-and-qda-iris-dataset.html"/>
 
-<link rel="next" href="k-nn-classification-iris-dataset.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -173,74 +173,81 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">STATS5099 Data Mining and Machine Learning</h1>
-</div>
-<div id="welcome-to-dmml-lab-3" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">1</span> Welcome to DMML Lab 3<a href="index.html#welcome-to-dmml-lab-3" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>In week 3, we have studied <span class="math inline">\(k\)</span>-nearest neighbours (<span class="math inline">\(k\)</span>-NN) and linear/quadratic discriminant analysis (LDA/QDA). We also introduced measures to evaluate the performance of classifiers, such as (mis)correct classification rate, class-specific rates, sensitivity and specificity, ROC and AUC, and two data splitting approaches, namely training, validation and test split, and cross-validation.</p>
-<p>Before reviewing specific classifiers, let's first summarise the general steps for building and evaluating classifiers.</p>
-<p>Suppose we have divided the data into training, validation and test sets. Then, the procedure is as follows.</p>
-<ol style="list-style-type: decimal">
-<li><p>Build the classifier on the training data.</p></li>
-<li><p>Use the classifier built in step 1 to make predictions for data in the validation set and evaluate its performance.</p></li>
+<div id="exercise-haberman" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Exercise: Haberman<a href="exercise-haberman.html#exercise-haberman" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The <code>Haberman</code> dataset contains cases from a study that was conducted between 1958 and 1970 at the University of Chicago's Billings Hospital on the survival of patients who had undergone surgery for breast cancer.</p>
+<p>The dataset contains information about four variables:</p>
+<ul>
+<li><p>V1. Age of patient at time of operation (numerical)</p></li>
+<li><p>V2. Patient's year of operation (year - 1900, numerical)</p></li>
+<li><p>V3. Number of positive axillary nodes detected (numerical)</p></li>
+<li><p>V4. Survival status (class label)</p>
+<ul>
+<li>1 = the patient survived 5 years or longer</li>
+<li>2 = the patient died within 5 year</li>
+</ul></li>
+</ul>
+<p>To load the data into <code>R</code> and convert <code>V4</code> (i.e. class) from numeric variable to categorical variable, use</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="exercise-haberman.html#cb39-1" aria-hidden="true" tabindex="-1"></a>haberman <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;haberman.data&quot;</span>,<span class="at">sep =</span> <span class="st">&quot;,&quot;</span>)</span>
+<span id="cb39-2"><a href="exercise-haberman.html#cb39-2" aria-hidden="true" tabindex="-1"></a>haberman<span class="sc">$</span>V4 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(haberman<span class="sc">$</span>V4)</span></code></pre></div>
+<p><strong>QUESTION</strong></p>
+<ol style="list-style-type: lower-alpha">
+<li>Perform exploratory analysis for this data. What have you observed?</li>
 </ol>
-<p>(Implement steps 1 and 2 for all proposed classifiers and different parameter values in the classifier, e.g. <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN.)</p>
-<ol start="3" style="list-style-type: decimal">
-<li><p>Select the optimal classifier and its parameters (if any) to be the one with the smallest error rate on the validation set.</p></li>
-<li><p>Re-run the selected classifier on the test set to make predictions.</p></li>
-</ol>
-<p>In the case that the data set is small, <span class="math inline">\(K\)</span>-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for <span class="math inline">\(K\)</span> rounds, where in each round, use <span class="math inline">\((K-1)/K\)</span> proportion of data for building the classifier and the remaining <span class="math inline">\(1/K\)</span> proportion of data for evaluating the classifier. The final validation error rate is the mean error rate averaged over <span class="math inline">\(K\)</span> rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4).</p>
-<p>The <code>R</code> command for manually splitting the data into training, validation and test sets is given below.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data) <span class="co">#sample size</span></span>
-<span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a>ind1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),        <span class="fu">floor</span>(train.prop <span class="sc">*</span> n)) <span class="co">#train.prop stands for the proportion of data in the training set</span></span>
-<span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a>ind2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n)[<span class="sc">-</span>ind1], <span class="fu">floor</span>(valid.prop <span class="sc">*</span> n)) <span class="co">#valid.prop stands for the proportion of data in the validation set</span></span>
-<span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a>ind3 <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),<span class="fu">c</span>(ind1,ind2))</span>
-<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> data[ind1, ]</span>
-<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a>valid.data <span class="ot">&lt;-</span> data[ind2, ]</span>
-<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a>test.data  <span class="ot">&lt;-</span> data[ind3, ]</span>
-<span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Remark: The floor() function is used to round any number to integers.</span></span></code></pre></div>
-<p>There are also built-in functions for data splitting in many <code>R</code> packages. For example, in the <code>SDMTune</code> package.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following codes are non-examinable.</span></span>
-<span id="cb2-2"><a href="index.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SDMtune)</span>
-<span id="cb2-3"><a href="index.html#cb2-3" aria-hidden="true" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">trainValTest</span>(data, <span class="at">val =</span> valid.prop, <span class="at">test =</span> test.prop)</span>
-<span id="cb2-4"><a href="index.html#cb2-4" aria-hidden="true" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> datasets[[<span class="dv">1</span>]]</span>
-<span id="cb2-5"><a href="index.html#cb2-5" aria-hidden="true" tabindex="-1"></a>val.data <span class="ot">&lt;-</span> datasets[[<span class="dv">2</span>]]</span>
-<span id="cb2-6"><a href="index.html#cb2-6" aria-hidden="true" tabindex="-1"></a>test.data <span class="ot">&lt;-</span> datasets[[<span class="dv">3</span>]]</span></code></pre></div>
-<div id="k-nn" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> k-NN<a href="index.html#k-nn" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Suppose we have training features <code>train.X</code>, training labels <code>train.Y</code>, validation features <code>valid.X</code> and validation labels <code>valid.Y</code>. The <span class="math inline">\(k\)</span>-NN classifier can be built by using</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
-<span id="cb3-2"><a href="index.html#cb3-2" aria-hidden="true" tabindex="-1"></a>valid.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, valid.X, train.Y, <span class="at">k=</span>k) <span class="co">#k is the number of neighbours considered</span></span></code></pre></div>
-<p><code>R</code> also have built-in functions for performing 1-NN and leave-one-out cross-validation of <span class="math inline">\(k\)</span>-NN.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1-NN</span></span>
-<span id="cb4-2"><a href="index.html#cb4-2" aria-hidden="true" tabindex="-1"></a>valid.pred<span class="fl">.1</span>NN <span class="ot">&lt;-</span> <span class="fu">knn1</span>(train.X, valid.X, train.Y)</span>
-<span id="cb4-3"><a href="index.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="index.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># leave-one-out cross-validation of k-NN</span></span>
-<span id="cb4-5"><a href="index.html#cb4-5" aria-hidden="true" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="fu">knn.cv</span>(train.X, train.Y, <span class="at">k=</span>k)</span></code></pre></div>
-<p>To decide the value of <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of <span class="math inline">\(k\)</span>-NN on the validation set or using cross-validation for a range of <span class="math inline">\(k\)</span> and select the optimal <span class="math inline">\(k\)</span> that returns the smallest validation error rate.</p>
+<div class="webex-solution">
+<button>
+Hint
+</button>
+<p>For numerical summaries, the following may be attempted</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="exercise-haberman.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb40-2"><a href="exercise-haberman.html#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(haberman)</span>
+<span id="cb40-3"><a href="exercise-haberman.html#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">aggregate</span>(x,<span class="at">by=</span><span class="fu">list</span>(haberman<span class="sc">$</span>V4), var))</span></code></pre></div>
+<p>For graphical summaries, try</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="exercise-haberman.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],<span class="dv">2</span>,hist)</span>
+<span id="cb41-2"><a href="exercise-haberman.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb41-3"><a href="exercise-haberman.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman, <span class="at">columns=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>V4, <span class="at">alpha=</span><span class="fl">0.2</span>))</span></code></pre></div>
 </div>
-<div id="linear-and-quadratic-discriminant-analysis" class="section level2 hasAnchor" number="1.2">
-<h2><span class="header-section-number">1.2</span> Linear and quadratic discriminant analysis<a href="index.html#linear-and-quadratic-discriminant-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Before implementing LDA and QDA, it is important to check if the assumptions are satisfied, i.e. the feature vectors follow multivariate Gaussian distributions, and additionally for LDA, the covariance matrices are equal across classes. In <code>R</code>, two useful commands for checking these assumptions are:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate variance by group</span></span>
-<span id="cb5-2"><a href="index.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(x, <span class="at">by=</span><span class="fu">list</span>(factor), <span class="at">FUN=</span>var) <span class="co">#&#39;x&#39; is a feature vector and &#39;factor&#39; is used to group features; for classification, the class label can be used as &#39;factor&#39;. </span></span>
-<span id="cb5-3"><a href="index.html#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="index.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># density plots, scatterplot, and Pearson correlation</span></span>
-<span id="cb5-5"><a href="index.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb5-6"><a href="index.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#create plots by groups</span></span>
-<span id="cb5-7"><a href="index.html#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># You could also add the argument &#39;columns&#39; to specify which columns to be plotted, e.g.</span></span>
-<span id="cb5-8"><a href="index.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data, <span class="at">columns=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#plotting 2nd and 3rd columns</span></span></code></pre></div>
-<p>The syntax for applying LDA and QDA is same as building a regression model:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span>
-<span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a>QDA <span class="ot">&lt;-</span> <span class="fu">qda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span></code></pre></div>
-<p>By default, the prior probabilities of each class are estimated as the class proportions. It can be specified explicitly by adding the argument <code>prior</code>. For example, assume we have a binary classification problem with equal prior for each class. Then we may change the code to:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data, <span class="at">prior=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>))</span></code></pre></div>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Based on your findings in (a), comment on the appropriateness to apply <span class="math inline">\(k\)</span>-NN, LDA and QDA.</li>
+</ol>
+<p>It is <select class='webex-select'><option value='blank'></option><option value='answer'>appropriate</option><option value=''>inappropriate</option></select> to apply <span class="math inline">\(k\)</span>-NN on this data.</p>
+<p>It is <select class='webex-select'><option value='blank'></option><option value=''>appropriate</option><option value='answer'>inappropriate</option></select> to apply LDA on this data.</p>
+<p>It is <select class='webex-select'><option value='blank'></option><option value=''>appropriate</option><option value='answer'>inappropriate</option></select> to apply QDA on this data.</p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Use 10-fold cross-validation to select the optimal value of <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN.</li>
+</ol>
+<div class="webex-solution">
+<button>
+Hint
+</button>
+<p>Check page 9 of week 3 lecture note for performing cross-validation.</p>
+<p>Remember that you should still split the data into training and test sets before using cross-validation.</p>
+</div>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Suppose we use <span class="math inline">\(3\)</span>-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate, and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results.</li>
+</ol>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="exercise-haberman.html#cb42-1" aria-hidden="true" tabindex="-1"></a>test.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, test.X, train.Y, <span class="at">k=</span><span class="dv">3</span>)</span>
+<span id="cb42-2"><a href="exercise-haberman.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(test.Y, test.pred)</span></code></pre></div>
+<pre><code>##       test.pred
+## test.Y  1  2
+##      1 40  4
+##      2 14  4</code></pre>
+<p><em>Round all answers to two decimal places.</em></p>
+<ul>
+<li><p>Sensitivity = <input class='webex-solveme nospaces' size='4' data-answer='["0.91",".91"]'/></p></li>
+<li><p>Specificity = <input class='webex-solveme nospaces' size='4' data-answer='["0.22",".22"]'/></p></li>
+<li><p>Positive predictive rate = <input class='webex-solveme nospaces' size='4' data-answer='["0.74",".74"]'/></p></li>
+<li><p>Negative predictive rate = <input class='webex-solveme nospaces' size='3' data-answer='["0.5",".5"]'/></p></li>
+<li><p>Accuracy = <input class='webex-solveme nospaces' size='4' data-answer='["0.71",".71"]'/></p></li>
+</ul>
 
 </div>
-</div>
+
+
+
+
+
+
 <script>
 
 /* update total correct if #webex-total_correct exists */
@@ -417,8 +424,8 @@ window.onload = function() {
           </div>
         </div>
       </div>
+<a href="lda-and-qda-iris-dataset.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
-<a href="k-nn-classification-iris-dataset.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

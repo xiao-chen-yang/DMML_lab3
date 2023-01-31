@@ -133,3 +133,5 @@ plot(K, cv.error, type="b", ylab="validation error rate")
 k.opt <- which.min(cv.error); print(k.opt)
 ```
 
+
+

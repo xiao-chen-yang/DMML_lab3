@@ -1,0 +1,110 @@
+# Exercise: Haberman
+
+The `Haberman` dataset contains cases from a study that was conducted between 1958 and 1970 at the University of Chicago's Billings Hospital on the survival of patients who had undergone surgery for breast cancer. 
+
+The dataset contains information about four variables:
+
+* V1. Age of patient at time of operation (numerical)
+
+* V2. Patient's year of operation (year - 1900, numerical)
+
+* V3. Number of positive axillary nodes detected (numerical)
+
+* V4. Survival status (class label)
+  + 1 = the patient survived 5 years or longer
+  + 2 = the patient died within 5 year
+
+To load the data into `R` and convert `V4` (i.e. class) from numeric variable to categorical variable, use
+```{r}
+haberman <- read.table("haberman.data",sep = ",")
+haberman$V4 <- as.factor(haberman$V4)
+```
+
+**QUESTION**
+
+(a) Perform exploratory analysis for this data. What have you observed?
+
+`r hide("Hint")`
+For numerical summaries, the following may be attempted
+```{r eval=FALSE}
+summary(haberman[,1:3])
+skim(haberman)
+apply(haberman[,1:3], 2, function(x) aggregate(x,by=list(haberman$V4), var))
+```
+
+For graphical summaries, try
+```{r eval=FALSE}
+apply(haberman[,1:3],2,hist)
+ggpairs(haberman[,1:3])
+ggpairs(haberman, columns=1:3, ggplot2::aes(colour=V4, alpha=0.2))
+```
+
+`r unhide()`
+
+(b) Based on your findings in (a), comment on the appropriateness to apply $k$-NN, LDA and QDA.
+
+It is `r mcq(c(answer="appropriate","inappropriate"))` to apply $k$-NN on this data. 
+
+It is `r mcq(c("appropriate",answer="inappropriate"))` to apply LDA on this data. 
+
+It is `r mcq(c("appropriate",answer="inappropriate"))` to apply QDA on this data. 
+
+(c) Use 10-fold cross-validation to select the optimal value of $k$ in $k$-NN. 
+
+`r hide("Hint")`
+Check page 9 of week 3 lecture note for performing cross-validation. 
+
+Remember that you should still split the data into training and test sets before using cross-validation.
+`r unhide()`
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+set.seed(1)
+ind <- sample(nrow(haberman),floor(nrow(haberman))*0.8)
+train.data <- haberman[ind,]
+test.data  <- haberman[-ind,]
+library(caret)
+training_control <- trainControl(method = "cv", number = 5)
+knn_cv <- train(train.data[,1:3], train.data[,4],
+                method="knn", trControl=training_control,
+                preProcess=c("center","scale"),
+                metric="Accuracy",
+                tuneGrid=data.frame(k=seq(1,10)))
+# knn_cv
+k.opt <- knn_cv$bestTune[[1]]
+```
+
+(d) Suppose we use $3$-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate, and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results. 
+```{r echo=FALSE}
+library(class)
+train.X <- train.data[,1:3]; 
+train.Y <- train.data[,4]
+test.X <- test.data[,1:3]
+test.Y <- test.data[,4]
+```
+
+```{r}
+test.pred <- knn(train.X, test.X, train.Y, k=3)
+table(test.Y, test.pred)
+```
+
+```{r echo=FALSE}
+Result <- table(test.data[,4], test.pred)
+sens <- Result[1,1]/sum(Result[1,])
+spec <- Result[2,2]/sum(Result[2,])
+PPR  <- Result[1,1]/sum(Result[,1])
+NPR  <- Result[2,2]/sum(Result[,2])
+Acc  <- sum(diag(Result))/sum(Result)
+# print(c(sens, spec, PPR, NPR, Acc))
+```
+
+*Round all answers to two decimal places.* 
+
+* Sensitivity = `r fitb(0.91)`
+
+* Specificity = `r fitb(0.22)`
+
+* Positive predictive rate = `r fitb(0.74)`
+
+* Negative predictive rate = `r fitb(0.5)`
+
+* Accuracy = `r fitb(0.71)`

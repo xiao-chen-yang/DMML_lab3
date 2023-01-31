@@ -85,7 +85,7 @@ mean(iris.test$Species != iris.pred.te$class)
 
 ## Task
 
-Implement QDA and compute the test error rate. 
+(a) Implement QDA and compute the test error rate. 
 
 
 ```{r, webex.hide="Solution"}
