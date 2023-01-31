@@ -1,0 +1,166 @@
+# Exercise 2: $R^2$ and linear model assumptions {-#ex-2}
+## `HSWRESTLER` dataset part II {-#hswrestler-pt-2} 
+
+Our main question of interest is if the hydrostatic fat (`hwfat`) can be determined from the tricep fat level (`triceps`).
+
+### Methods {-#hswrestler-2}
+
+We will model the relationship between hydrostatic fat and tricep fat using a simple linear regression model and then check if this model is appropriate for the data. The model is given as 
+
+<p align = "center">
+$Y_i = \alpha + \beta x_i + \epsilon_i$,
+</p>
+
+where
+(a) the deterministic part of the model captures all the non-random structure in the data;
+(b) the random errors, $\epsilon_i$, have constant variance;
+(c) the random errors, $\epsilon_i$, are independent;
+(d) the random errors, $\epsilon_i$, are normally distributed;
+(e) the explanatory variable, $x$, is recorded without error.
+
+We will consider assumptions (a)-(d) in this practical (assumption (e) cannot be assessed by examining the data).
+
+### Exploratory analysis {-#hswrestler-3}
+
+Firstly, produce a scatterplot of the response variable `hwfat` ($y$), against the predictor variable `triceps` ($x$).
+
+`r hide("Hint: Code for plot")`
+Use the `plot()` command with `hwfat` as the response variable and `triceps` as the explanatory variable.
+`r unhide()`
+
+`r hide("Solution: Plot code and output")`
+```{r hs-plot, eval=TRUE, echo=TRUE}
+plot(hwfat ~ triceps, data = HSWRESTLER, xlab = "Tricep fat percentage", ylab = "Hydrostatic fat percentage")
+```
+`r unhide()`
+
+What can we say about the relationship between `hwfat` and `triceps`?
+
+```{r hs-opts, eval=TRUE, echo=FALSE}
+opts_d <- c("There is a moderate negative relationship", "There is a weak negative relationship", answer = "There is a moderate positive relationship", "There is no relationship")
+```
+
+`r longmcq(opts_d)`
+
+### Statistical analysis {-#hswrestler-4}
+
+A simple linear regression model can be fitted in `R` using the `lm()` command.
+
+Fit a simple linear regression model to the `HSWRESTLER` data, with `hwfat` as the response variable and `triceps` as the explanatory variable. 
+
+`r hide("Solution: Code for model fit")`
+```{r model-fit-hs, eval = TRUE}
+model.hs <- lm(hwfat ~ triceps, data = HSWRESTLER)
+```
+`r unhide()`
+
+### Assumption checking {-#hswrestler-5}
+
+Before assessing the fit of the model, it is important to check that the assumptions underlying the model are satisfied. In order to do this, we need to obtain the residuals after fitting the model. These can be obtained using the commands:
+
+<p align = "center">
+`residuals(model.hs)`
+`rstandard(model.hs)`
+</p>
+
+with the latter command providing the standardised residuals. These commands can be used to produce a plot of the residuals versus the fitted values and a normal probability plot (Q-Q plot) of the residuals to graphically assess assumptions (a), (b), and (d).
+
+Plot the standardised residuals versus fitted values.
+
+`r hide("Hint: Code for plot")`
+Use the function `plot()` with `rstandard()` and `fitted()` for the residuals versus fitted values.
+`r unhide()`
+
+`r hide("Solution: Plot code and output")`
+```{r resids-plot-hs, eval = TRUE, echo = TRUE}
+plot(rstandard(model.hs) ~ fitted(model.hs))
+abline(h=0, lwd=1, lty = 2)
+```
+`r unhide()`
+
+Plot the normal probability (Q-Q) plot, including a line.
+
+`r hide("Hint: Code for plot")`
+Use the function `qqnorm()` with the `rstandard()` function, and add a line with the function `qqline()`.
+`r unhide()`
+
+`r hide("Solution: Plot code and output")`
+```{r qq-plot-hs, eval=TRUE, echo=TRUE}
+qqnorm(rstandard(model.hs))
+qqline(rstandard(model.hs), col = "red", lwd = 2)
+```
+`r unhide()`
+
+From the plot, we can see that the points lie `r mcq(c(answer = "somewhat close to", "away from"))` the line of equality ($y=x$). This means that it is `r mcq(c("not reasonable", answer = "quite reasonable"))` to assume that **the random errors are normally distributed**. Note that this assumption is required only when we wish to make inferences about the parameters of the model to be applied to some wider population. 
+
+Now, plot the histogram of residuals using the function `hist()`.
+
+`r hide("Hint: Code for plot")`
+Use the function `hist()` and `rstandard()` to plot the histogram of residuals.
+`r unhide()`
+
+`r hide("Solution: Plot code and output")`
+```{r hist-plot-hs, eval=TRUE, echo=TRUE}
+hist(rstandard(model.hs))
+```
+`r unhide()`
+
+From the plot above, the histogram `r mcq(c(answer = "shows", "does not show"))` a reasonably bell-shaped curve, and hence normality appears `r mcq(c("unreasonable", answer = "quite reasonable"))`.
+
+### Regression output {-#regression-hs}
+
+Obtain the regression model summary and examine the output.
+
+`r hide("Hint: Summary code")`
+Use the function `summary()` to examine regression output.
+`r unhide()`
+
+`r hide("Solution: Summary code and output")`
+```{r summary-output-hs, eval = TRUE, echo = FALSE}
+summary(model.hs)
+```
+`r unhide()`
+
+Print the analysis of variance (ANOVA) table.
+
+`r hide("Hint: ANOVA code")`
+Use the function `anova()` to obtain the ANOVA table.
+`r unhide()`
+
+`r hide("Solution: ANOVA output")`
+```{r anova-output-hs, eval = TRUE, echo = FALSE}
+anova(model.hs)
+```
+`r unhide()`
+
+From the summary table output we can see that the regression equation is
+(*to 4 decimal places*)
+
+<p align = "center">
+Hydrostatic fat = `r fitb(1.5787)` + `r fitb(0.9765)` $\cdot$ tricep fat
+</p>
+
+Again, from the summary table output, the value of the coefficient of determination, $R^2$, is `r fitb(84.02)`%. This gives us the percentage of variation in `hwfat` that is explained by the linear regression model with `triceps` as a predictor. Hence `r fitb(84.02)`% of the variation in the price of a diamond ring is explained by taking into account the weight of the diamond using out simple linear regression model. Hence the model gives `r mcq(c(answer = "a relatively good", "an excellent", "a bad"))` fit to the data. 
+
+The adjusted coefficient of determination, $R^2_a$, is also useful in examining model fit and can be obtained from the summary table output. In this case, $R^2_a$ is `r fitb(83.81)`%, which is `r mcq(c("higher", answer = "lower"))` than the $R^2$ value.
+
+Which of the two statistics, $R^2$ and $R^2_a$, is more appropriate to assess the model goodness of fit? 
+
+`r longmcq(c(answer = "$R^2_a$, because it takes into account how many variables are in a model to determine the most appropriate variables to include.", "$R^2$, because it is always higher."))`
+
+We can plot the data with the fitted line superimposed, such as in the Exploratory analysis section, using the command `abline()` after plotting the data. 
+
+`r hide("Hint: Code for plot")`
+Use the function `plot()` with `hwfat` as the response variable and `triceps` as the explanatory variable, and use the function `abline()` to add a regression line to the plot.
+`r unhide()`
+
+`r hide("Solution: Plot code and output")`
+```{r hs-plot-line, eval=TRUE, echo=TRUE}
+plot(hwfat ~ triceps, data = HSWRESTLER, xlab = "Tricep fat percentage", ylab = "Hydrostatic fat percentage")
+abline(model.hs, col = "red")
+```
+`r unhide()`
+
+### Conclusion {-#conclusion-hs}
+
+A simple linear regression model has provided `r mcq(c(answer = "a relatively good", "an excellent", "a bad"))` and `r mcq(c("inappropriate", answer = "appropriate"))` model for predicting the price of a diamond ring from the weight of the diamond in the ring. `r mcq(c("None", answer = "Most", "Almost all"))` of the variability in the response has been explained and the assumptions `r mcq(c(answer = "appear", "do not appear"))` justified.

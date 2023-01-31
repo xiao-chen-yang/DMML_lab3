@@ -1,0 +1,62 @@
+# Example 1 {-#eg-1}
+## `GRADES` dataset {-#grades}
+
+### Constructing an ANOVA table {-#anova-eg}
+
+Construct an ANOVA table using the data in `GRADES`. Then, test if a linear relationship exists between first-semester college grade point average (`gpa`) and scholastic aptitude score (`sat`) using the information in the ANOVA table at the $\alpha = 0.05$ level. 
+
+Start by fitting the model and computing the ANOVA table.
+
+First fit the model for `gpa` and `sat`:
+
+<p align = "center">
+`model.lm <- lm(gpa ~ sat, data = GRADES)`
+</p>
+
+Then use the `anova()` command to obtain the ANOVA table:
+
+<p align = "center">
+`anova(model.lm)`
+</p>
+
+The ANOVA table output is shown below:
+```{r ANOVA-table, eval = TRUE, echo = FALSE}
+model.lm <- lm(gpa ~ sat, data = GRADES)
+anova(model.lm)
+```
+
+### Testing for linear relationships {-#test-eg}
+
+Test if a linear relationship exists between `gpa` and `sat` using the information in the ANOVA table at the $\alpha = 0.05$ level. 
+
+Step 1: Calculate the rejection region, i.e., $F_{obs}$.
+
+$F_{obs} =$ `r fitb(253.1824)`
+
+`r hide("Hint: How to calculate $F_{obs}$")`
+Because $F_{obs} \sim F_{1,198}$ and this is a one-tailed test, the rejection region is $F_{obs} > F_{0.95;1,198} = 3.8889$ (from the statistical tables). The value of the standardised test statistic is $F_{obs} = \frac{MSR}{MSE}$. This is also found in the ANOVA table output.
+`r unhide()`
+
+`r hide("Solution: $F_{obs}$")`
+$F_{obs} = \frac{MSR}{MSE} = \frac{40.3965}{0.1596} = 253.1824$
+`r unhide()`
+
+Step 2: Use the p-value (`Pr(>|F|))`) in the ANOVA table to determine whether to reject $H_0$ or not.
+1. From the rejection region, we `r mcq(c(answer = "reject", "do not reject"))` $H_0$ because $F_{obs}$ is `r mcq(c("less than", answer = "greater than"))` 3.8889.
+2. From the p-value, we `r mcq(c(answer = "reject", "do not reject"))` $H_0$ because the value for `Pr(>|F|))` is `r mcq(c("greater than", answer = "less than"))` 0.05.
+
+Step 3: Interpret your results.
+There is `r mcq(c(answer = "strong evidence", "insufficient evidence"))` that suggests a linear relationship exists between first-semester `gpa` and `sat` scores.
+
+Compute $R^2$ based on `anova(model.lm)` (it should be the same as the value returned in `summary(model.lm)`)
+
+$R^2 =$ `r fitb(0.5612)`
+
+`r hide("Hint: How to calculate $R^2$")`
+The formula for $R^2$ is 
+$R^2 = \frac{SST}{SST + SSE}$
+`r unhide()`
+
+`r hide("Solution: $R^2$")`
+$R^2 = \frac{SST}{SST + SSE} = \frac{40.397}{40.397+31.592} = 0.5612$
+`r unhide()`

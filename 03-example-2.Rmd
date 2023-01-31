@@ -1,0 +1,126 @@
+# Example 2 {-#eg-2}
+## The price of diamonds {-#diamonds-1}
+
+A sample of 48 diamond rings was obtained in Singapore. The price of each ring and the weight of the diamond stone in the ring were recorded. The data are available in the `diamonds.csv` file. Set the working directory in RStudio to the directory in which you have stored both the data and your `R` script by going to:
+
+<p align = "center">
+`Session > Set Working Directory > To Source File Location`
+</p>
+
+Read in the data using:
+<p align = "center">
+`diamonds <- read.csv("diamonds.csv")`
+</p>
+
+Our main question of interest is if the price of a diamond ring can be determined from the weight of the diamond stone in the ring.
+
+### Methods {-#diamonds-2}
+
+We will model the relationship between price and weight using a simple linear regression model and then check if this model is appropriate for the data. The model is given as 
+
+<p align = "center">
+$Y_i = \alpha + \beta x_i + \epsilon_i$,
+</p>
+
+where
+(a) the deterministic part of the model captures all the non-random structure in the data;
+(b) the random errors, $\epsilon_i$, have constant variance;
+(c) the random errors, $\epsilon_i$, are independent;
+(d) the random errors, $\epsilon_i$, are normally distributed;
+(e) the explanatory variable, $x$, is recorded without error.
+
+We will consider assumptions (a)-(d) in this practical (assumption (e) cannot be assessed by examining the data).
+
+### Exploratory analysis {-#diamonds-3}
+
+Firstly, we will produce a scatterplot of the response variable `Price` ($y$), against the predictor variable `Weight` ($x$). 
+
+```{r diamonds-plot, eval=TRUE, echo=TRUE}
+plot(Price ~ Weight, data = diamonds, xlab = "Weight (carats)", ylab = "Price (Singapore Dollars)")
+```
+
+What can we say about the relationship between `Price` and `Weight`?
+
+```{r diamonds-opts, eval=TRUE, echo=FALSE}
+opts_d <- c("There is a moderate negative relationship", "There is a weak positive relationship", answer = "There is a strong positive relationship", "There is no relationship")
+```
+
+`r longmcq(opts_d)`
+
+### Statistical analysis {-#diamonds-4}
+
+A simple linear regression model can be fitted in `R` using the `lm()` command.
+
+We will fit a simple linear regression model to the `diamonds` data, with `Price` as the response variable and `Weight` as the explanatory variable. This is done using the code:
+
+```{r model-fit, eval = TRUE}
+model1 <- lm(Price ~ Weight, data = diamonds)
+```
+
+### Assumption checking {-#diamonds-as}
+
+Before assessing the fit of the model, it is important to check that the assumptions underlying the model are satisfied. In order to do this, we need to obtain the residuals after fitting the model. These can be obtained using the commands:
+
+<p align = "center">
+`residuals(model1)`
+`rstandard(model1)`
+</p>
+
+with the latter command providing the standardised residuals. These commands can be used to produce a plot of the residuals versus the fitted values and a normal probability plot (Q-Q plot) of the residuals to graphically assess assumptions (a), (b), and (d).
+
+Plot the standardised residuals versus fitted values.
+
+```{r resids-plot, eval = TRUE, echo = TRUE}
+plot(rstandard(model1) ~ fitted(model1))
+abline(h=0, lwd=1, lty = 2)
+```
+
+Plot the normal probability (Q-Q) plot using the function `qqnorm()`, and add a line with the function `qqline()`.
+
+```{r qq-plot, eval = TRUE, echo = TRUE}
+qqnorm(rstandard(model1))
+qqline(rstandard(model1), col = "red", lwd = 2)
+```
+
+From the plot, we can see that the points lie `r mcq(c(answer = "fairly close to", "away from"))` the line of equality ($y=x$). This means that it is `r mcq(c("not reasonable", answer = "reasonable"))` to assume that **the random errors are normally distributed**. Note that this assumption is required only when we wish to make inferences about the parameters of the model to be applied to some wider population. 
+
+Now, plot the histogram of residuals using the function `hist()`.
+
+```{r hist-plot, eval = TRUE, echo = TRUE}
+hist(rstandard(model1))
+```
+
+From the plot above, the histogram `r mcq(c(answer = "shows", "does not show"))` a reasonably bell-shaped curve, and hence normality appears `r mcq(c("unreasonable", answer = "reasonable"))`.
+
+### Regression output {-#regression}
+
+Use the function `summary()` to examine regression output.
+
+```{r summary-output, eval = TRUE, echo = TRUE}
+summary(model1)
+```
+
+Use the function `anova()` to obtain the analysis of variance (ANOVA) table.
+
+```{r anova-output, eval = TRUE, echo = TRUE}
+anova(model1)
+```
+
+From the summary table output we can see that the regression equation is
+
+<p align = "center">
+Price = `r fitb(-259.63)` + `r fitb(3721.02)` $\cdot$ Weight
+</p>
+
+Again, from the summary table output, the value of the coefficient of determination, $R^2$, is `r fitb(97.83)`%. This gives us the percentage of variation in `Price` that is explained by the linear regression model with `Weight` as a predictor. Hence `r fitb(97.83)`% of the variation in the price of a diamond ring is explained by taking into account the weight of the diamond using out simple linear regression model. Hence the model gives `r mcq(c("a good", answer = "an excellent", "a bad"))` fit to the data. 
+
+We can plot the data with the fitted line superimposed, such as in the Exploratory analysis section, using the command `abline()` after plotting the data. 
+
+```{r diamonds-plot-line, eval=TRUE, echo=TRUE}
+plot(Price ~ Weight, data = diamonds, xlab = "Weight (carats)", ylab = "Price (Singapore Dollars)")
+abline(model1, col = "red")
+```
+
+### Conclusion {-#conclusion}
+
+A simple linear regression model has provided `r mcq(c("a good", answer = "an excellent", "a bad"))` and `r mcq(c("inappropriate", answer = "appropriate"))` model for predicting the price of a diamond ring from the weight of the diamond in the ring. `r mcq(c("None", "Some", answer = "Almost all"))` of the variability in the response has been explained and the assumptions `r mcq(c(answer = "appear", "do not appear"))` justified.
