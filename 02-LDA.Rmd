@@ -1,0 +1,95 @@
+# LDA and QDA: Iris dataset
+
+Let's continue the analysis on Iris dataset, but now using discriminant analysis. 
+
+## Checking assumptions
+
+The `ggpairs` plot produced in previous section suggests that the Gaussian assumption is roughly satisfied. In addition, we also need to check if the groups have equal covariance. 
+
+```{r}
+for (i in 1:4) {
+  cat(colnames(iris)[i],sep="\n")
+  print(aggregate(iris[,i],by=list(iris$Species),var)) #compute variance for each group
+}
+```
+
+Results suggest that considerable differences in the variances for Sepal Length and Petal Length. Therefore, it may not be very appropriate to apply LDA. Nonetheless, to illustrate how LDA and QDA works, we will run both models in this example. 
+
+## LDA
+
+Since there is no parameter to select in LDA or QDA, we only need to split the data into training and test sets.
+
+```{r}
+set.seed(1)
+n <- nrow(iris)
+ind <- sample(c(1:n), floor(0.8*n))
+iris.train <- iris[ind,]
+iris.test  <- iris[-ind,]
+```
+
+Next, we implement LDA by using
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+iris.lda <- lda(Species~., data=iris.train)
+iris.lda 
+```
+
+Since we have three classes, two ($3-1$) linear discriminant functions are produced. We could see how the first linear discriminant function separates the three classes by using `ldahist` function or by using `ggplot`. 
+
+```{r}
+iris.pred.tr <- predict(iris.lda)
+ldahist(data = iris.pred.tr$x[,1], g=iris.train$Species)
+```
+```{r}
+dataset <- data.frame(Type=iris.train$Species, lda=iris.pred.tr$x)
+ggplot(dataset, aes(x=lda.LD1)) + 
+  geom_density(aes(group=Type, colour=Type, fill=Type), alpha=0.3)
+```
+The first linear discriminant is quite effective in separating setosa from the other classes, but less effective in separating versicolor and virginica. 
+
+While `R` could automatically help us make predictions, let's try to create a classification rule manually based on LD1.
+```{r}
+# The classification rule is defined as follows:
+# classify observations to virginica  if LD1 < -3.5;
+# classify observations to versicolor if -3.5 <= LD1 <= 3;
+# classify observations to setosa     if LD1 > 3
+pred.LD1 <-rep("versicolor",nrow(iris.train))
+pred.LD1[iris.pred.tr$x[,1] < -3.5] <- "virginica"
+pred.LD1[iris.pred.tr$x[,1] >  3] <- "setosa"
+mean(pred.LD1!=iris.train$Species)
+```
+
+This shows that we have an error rate of 1.67% on the training data. 
+
+Let's now move to using two linear discriminant functions and see if that improves the classification accuracy. First, we could visualise how LD1 and LD2 together separate the three classes by using either of the following two comments
+```{r}
+# plot(iris.pred.tr$x[,1],iris.pred.tr$x[,2], col=train.data$Species,
+#      pch=as.numeric(train.data$Species), xlab="LD1", ylab="LD2")
+ggplot(dataset, aes(x=lda.LD1, y=lda.LD2)) + 
+  geom_point(aes(group=Type, colour=Type, shape=Type))
+```
+
+Now let's compute the error rate again, but using both LD1 and LD2. 
+
+```{r}
+mean(iris.train$Species != iris.pred.tr$class)
+```
+
+The error rate even increases slightly compared with using LD1. 
+
+Finally, let's use the built LDA to predict species for test data. The error rate is again 0%, great!
+```{r}
+iris.pred.te <- predict(iris.lda, iris.test) 
+mean(iris.test$Species != iris.pred.te$class)
+```
+
+## Task
+
+Implement QDA and compute the test error rate. 
+
+
+```{r, webex.hide="Solution"}
+iris.qda <- qda(Species~., data=iris.train)
+iris.pred.te2 <- predict(iris.qda, iris.test)
+mean(iris.test$Species != iris.pred.te2$class)
+```

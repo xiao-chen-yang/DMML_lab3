@@ -1,0 +1,16 @@
+tab:unnamed-chunk-11
+welcome-to-dmml-lab-3
+k-nn
+linear-and-quadratic-discriminant-analysis
+k-nn-classification-iris-dataset
+exploratory-data-analysis
+classification-using-k-nn
+data-splitting
+distances
+finding-the-optimal-value-of-k
+prediction
+task
+lda-and-qda-iris-dataset
+checking-assumptions
+lda
+task-1

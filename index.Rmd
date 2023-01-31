@@ -1,0 +1,118 @@
+---
+title: "STATS5099 Data Mining and Machine Learning"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+biblio-style: apalike
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+library(webexercises)
+library(tinytex)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+
+options(digits=4)
+```
+
+
+```{r include=FALSE, echo=FALSE}
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+
+# Welcome to DMML Lab 3
+
+In week 3, we have studied $k$-nearest neighbours ($k$-NN) and linear/quadratic discriminant analysis (LDA/QDA). We also introduced measures to evaluate the performance of classifiers, such as (mis)correct classification rate, class-specific rates, sensitivity and specificity, ROC and AUC, and two data splitting approaches, namely training, validation and test split, and cross-validation.
+
+Before reviewing specific classifiers, let's first summarise the general steps for building and evaluating classifiers. 
+
+Suppose we have divided the data into training, validation and test sets. Then, the procedure is as follows.  
+
+1. Build the classifier on the training data. 
+
+2. Use the classifier built in step 1 to make predictions for data in the validation set and evaluate its performance. 
+
+(Implement steps 1 and 2 for all proposed classifiers and different parameter values in the classifier, e.g. $k$ in $k$-NN.)
+
+3. Select the optimal classifier and its parameters (if any) to be the one with the smallest error rate on the validation set.
+
+4. Re-run the selected classifier on the test set to make predictions. 
+
+In the case that the data set is small, $K$-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for $K$ rounds, where in each round, use $(K-1)/K$ proportion of data for building the classifier and the remaining $1/K$ proportion of data for evaluating the classifier. The final validation error rate is the mean error rate averaged over $K$ rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4). 
+
+The `R` command for manually splitting the data into training, validation and test sets is given below.
+```{r eval=FALSE}
+n <- nrow(data) #sample size
+ind1 <- sample(c(1:n),        floor(train.prop * n)) #train.prop stands for the proportion of data in the training set
+ind2 <- sample(c(1:n)[-ind1], floor(valid.prop * n)) #valid.prop stands for the proportion of data in the validation set
+ind3 <- setdiff(c(1:n),c(ind1,ind2))
+
+train.data <- data[ind1, ]
+valid.data <- data[ind2, ]
+test.data  <- data[ind3, ]
+
+# Remark: The floor() function is used to round any number to integers.
+```
+
+There are also built-in functions for data splitting in many `R` packages. For example, in the `SDMTune` package.
+```{r eval=FALSE}
+# The following codes are non-examinable.
+library(SDMtune)
+datasets <- trainValTest(data, val = valid.prop, test = test.prop)
+train.data <- datasets[[1]]
+val.data <- datasets[[2]]
+test.data <- datasets[[3]]
+```
+
+## k-NN
+
+Suppose we have training features `train.X`, training labels `train.Y`, validation features `valid.X` and validation labels `valid.Y`. The $k$-NN classifier can be built by using
+
+```{r eval=FALSE}
+library(class)
+valid.pred <- knn(train.X, valid.X, train.Y, k=k) #k is the number of neighbours considered
+```
+
+`R` also have built-in functions for performing 1-NN and leave-one-out cross-validation of $k$-NN.
+```{r eval=FALSE}
+# 1-NN
+valid.pred.1NN <- knn1(train.X, valid.X, train.Y)
+
+# leave-one-out cross-validation of k-NN
+cv <- knn.cv(train.X, train.Y, k=k)
+```
+
+To decide the value of $k$ in $k$-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of $k$-NN on the validation set or using cross-validation for a range of $k$ and select the optimal $k$ that returns the smallest validation error rate.  
+
+## Linear and quadratic discriminant analysis
+
+Before implementing LDA and QDA, it is important to check if the assumptions are satisfied, i.e. the feature vectors follow multivariate Gaussian distributions, and additionally for LDA, the covariance matrices are equal across classes. In `R`, two useful commands for checking these assumptions are:
+```{r eval=FALSE}
+# calculate variance by group
+aggregate(x, by=list(factor), FUN=var) #'x' is a feature vector and 'factor' is used to group features; for classification, the class label can be used as 'factor'. 
+
+# density plots, scatterplot, and Pearson correlation
+library(GGally)
+ggpairs(data, ggplot2::aes(colour=factor)) #create plots by groups
+# You could also add the argument 'columns' to specify which columns to be plotted, e.g.
+ggpairs(data, columns=2:3, ggplot2::aes(colour=factor)) #plotting 2nd and 3rd columns
+```
+
+The syntax for applying LDA and QDA is same as building a regression model:
+```{r eval=FALSE}
+LDA <- lda(Y ~ X1 + X2 + X3, data)
+QDA <- qda(Y ~ X1 + X2 + X3, data)
+```
+
+By default, the prior probabilities of each class are estimated as the class proportions. It can be specified explicitly by adding the argument `prior`. For example, assume we have a binary classification problem with equal prior for each class. Then we may change the code to: 
+
+```{r eval=FALSE}
+LDA <- lda(Y ~ X1 + X2 + X3, data, prior=c(1/2,1/2))
+```
+
