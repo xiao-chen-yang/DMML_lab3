@@ -249,8 +249,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb29-3"><a href="lda-and-qda-iris-dataset.html#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">group=</span>Type, <span class="at">colour=</span>Type, <span class="at">fill=</span>Type), <span class="at">alpha=</span><span class="fl">0.3</span>)</span></code></pre></div>
 <p><img src="main_files/figure-html/unnamed-chunk-25-1.png" width="672" />
 The first linear discriminant is quite effective in separating setosa from the other classes, but less effective in separating versicolor and virginica.</p>
-<p>While <code>R</code> could automatically help us make predictions, let's try to create a classification rule manually based on LD1.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lda-and-qda-iris-dataset.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The classification rule is defined as follows:</span></span>
+<p>While <code>R</code> could automatically help us make predictions, let's try to manually create a classification rule using only LD1 based on the figure above.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lda-and-qda-iris-dataset.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The classification rule is manually designed as follows:</span></span>
 <span id="cb30-2"><a href="lda-and-qda-iris-dataset.html#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to virginica  if LD1 &lt; -3.5;</span></span>
 <span id="cb30-3"><a href="lda-and-qda-iris-dataset.html#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to versicolor if -3.5 &lt;= LD1 &lt;= 3;</span></span>
 <span id="cb30-4"><a href="lda-and-qda-iris-dataset.html#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to setosa     if LD1 &gt; 3</span></span>
@@ -260,6 +260,7 @@ The first linear discriminant is quite effective in separating setosa from the o
 <span id="cb30-8"><a href="lda-and-qda-iris-dataset.html#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pred.LD1<span class="sc">!=</span>iris.train<span class="sc">$</span>Species)</span></code></pre></div>
 <pre><code>## [1] 0.01667</code></pre>
 <p>This shows that we have an error rate of 1.67% on the training data.</p>
+<p><em>Challenge: How might you decide the optimal cutting points instead of using <span class="math inline">\(-3.5\)</span> and <span class="math inline">\(3\)</span> in the classification rule above?</em></p>
 <p>Let's now move to using two linear discriminant functions and see if that improves the classification accuracy. First, we could visualise how LD1 and LD2 together separate the three classes by using either of the following two comments</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lda-and-qda-iris-dataset.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(iris.pred.tr$x[,1],iris.pred.tr$x[,2], col=train.data$Species,</span></span>
 <span id="cb32-2"><a href="lda-and-qda-iris-dataset.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#      pch=as.numeric(train.data$Species), xlab=&quot;LD1&quot;, ylab=&quot;LD2&quot;)</span></span>

@@ -47,9 +47,9 @@ ggplot(dataset, aes(x=lda.LD1)) +
 ```
 The first linear discriminant is quite effective in separating setosa from the other classes, but less effective in separating versicolor and virginica. 
 
-While `R` could automatically help us make predictions, let's try to create a classification rule manually based on LD1.
+While `R` could automatically help us make predictions, let's try to manually create a classification rule using only LD1 based on the figure above.
 ```{r}
-# The classification rule is defined as follows:
+# The classification rule is manually designed as follows:
 # classify observations to virginica  if LD1 < -3.5;
 # classify observations to versicolor if -3.5 <= LD1 <= 3;
 # classify observations to setosa     if LD1 > 3
@@ -60,6 +60,8 @@ mean(pred.LD1!=iris.train$Species)
 ```
 
 This shows that we have an error rate of 1.67% on the training data. 
+
+*Challenge: How might you decide the optimal cutting points instead of using $-3.5$ and $3$ in the classification rule above?*
 
 Let's now move to using two linear discriminant functions and see if that improves the classification accuracy. First, we could visualise how LD1 and LD2 together separate the three classes by using either of the following two comments
 ```{r}
