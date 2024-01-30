@@ -73,7 +73,7 @@ knn_cv <- train(train.data[,1:3], train.data[,4],
 k.opt <- knn_cv$bestTune[[1]]
 ```
 
-(d) Suppose we use $3$-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate, and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results. 
+(d) Suppose we use $3$-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results. 
 ```{r echo=FALSE}
 library(class)
 train.X <- train.data[,1:3]; 

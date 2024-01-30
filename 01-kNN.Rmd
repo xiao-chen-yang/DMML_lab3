@@ -41,7 +41,7 @@ iris.test  <- iris[ind3,]
 
 One important decision to be made when applying $k$-NN is the distance measure. By default, `knn` uses the Euclidean distance. 
 
-Looking at the summary statistics computed earlier, we see that Iris features have different ranges and standard deviations. This raises a concern of directly using the Euclidean distance, since features with large ranges and/or standard deviations may become a dominant term in the calculation of Euclidean distance. A simple remedy for this is to standardise^[Suppose we have a set of observations $X=\{x_1, x_2, \ldots, x_n\}$. To standardise the variable, we subtract its mean value and divide by its standard deviation. That is, $$x'_i = \frac{x_i-\text{mean}{X}}{\text{sd}(X)}$$] all features so that they all have mean zero and variance of one.
+Looking at the summary statistics computed earlier, we see that Iris features have different ranges and standard deviations. This raises a concern of directly using the Euclidean distance, since features with large ranges and/or standard deviations may become a dominant term in the calculation of Euclidean distance. A simple remedy for this is to standardise^[Suppose we have a set of observations $X=\{x_1, x_2, \ldots, x_n\}$. To standardise the variable, we subtract its mean value and divide by its standard deviation. That is, $$x'_i = \frac{x_i-\text{mean}(X)}{\text{sd}(X)}$$] all features so that they all have mean zero and variance of one.
 ```{r}
 var.mean <- apply(iris.train[,1:4],2,mean) #calculate mean of each feature
 var.sd   <- apply(iris.train[,1:4],2,sd)   #calculate standard deviation of each feature
@@ -61,31 +61,36 @@ The `kknn` packages allows computing (weighted) Minkowski distance, which includ
 This tutorial explains the mechanism of $k$NN from scatch and shows ways to perform $k$-NN for any defined distances. 
 
 ### Finding the optimal value of k
-Now we evaluate the error rate on the validation set for different values of k and plot the error rate against $k$. 
+Now we evaluate the correct classification rate on the validation set for different values of k and plot the correct classification rate against $k$. 
 ```{r}
 library(class)
+set.seed(1)
 K <- c(1:15)
-valid.error <- c()
+valid.corr <- c()
 for (k in K){
   valid.pred <- knn(iris.train.scale, iris.valid.scale, iris.train[,5], k=k)
-  valid.error[k] <- mean(iris.valid[,5] != valid.pred)
+  valid.corr[k] <- mean(iris.valid[,5] == valid.pred)
 }
 
-plot(K, valid.error, type="b", ylab="validation error rate")
+plot(K, valid.corr, type="b", ylab="validation correct classification rate")
 ```
 
-**QUESTION**: Which value of $k$ would you select for $k$-NN? $k=$ `r fitb(c(8,9))`
+```{r echo=FALSE}
+idx <- which(valid.corr==max(valid.corr))
+```
+
+**QUESTION**: Which value of $k$ would you select for $k$-NN? $k=$ `r fitb(idx)`
 
 `r hide("Solution")`
-$k=8$ or $k=9$ gives the optimal performance on the validation set. For now, we just pick $k=8$ to be our final classifier.  
+$k=9$ gives the optimal performance on the validation set. Note that if we re-run the code with different initialisation (i.e. by changing the value in `set.seed`), the optimal value of $k$ might change. 
 `r unhide()`
 
 ### Prediction
 
-Finally we can apply $8$-NN to the test set and see how accurate our classifier is. 
+Finally we can apply $3$-NN to the test set and see how accurate our classifier is. 
 
 ```{r}
-k.opt <- which.min(valid.error)
+k.opt <- which.max(valid.corr)
 test.pred <- knn(iris.train.scale, iris.test.scale, iris.train[,5], k=k.opt)
 table(iris.test$Species,test.pred)
 ```
@@ -123,14 +128,14 @@ Use `knn.cv` for leave-one-out cross-validation
 
 ```{r webex.hide="Solution"}
 K <- c(1:15)
-cv.error <- c()
+cv.corr <- c()
 for (k in K){
   train.pred <- knn.cv(iris.train.scale, iris.train[,5], k=k)
-  cv.error[k] <- mean(iris.train[,5] != train.pred)
+  cv.corr[k] <- mean(iris.train[,5] == train.pred)
 }
 
-plot(K, cv.error, type="b", ylab="validation error rate")
-k.opt <- which.min(cv.error); print(k.opt)
+plot(K, cv.corr, type="b", ylab="leave-one-out cross-validation correct classification rate")
+k.opt <- which.max(cv.corr); print(k.opt)
 ```
 
 

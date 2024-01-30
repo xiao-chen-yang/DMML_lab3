@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>3 LDA and QDA: Iris dataset | STATS5099 Data Mining and Machine Learning</title>
   <meta name="description" content="3 LDA and QDA: Iris dataset | STATS5099 Data Mining and Machine Learning" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
   <meta property="og:title" content="3 LDA and QDA: Iris dataset | STATS5099 Data Mining and Machine Learning" />
   <meta property="og:type" content="book" />
@@ -117,6 +117,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 <link rel="stylesheet" href="include/webex.css" type="text/css" />
@@ -179,10 +183,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="checking-assumptions" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Checking assumptions<a href="lda-and-qda-iris-dataset.html#checking-assumptions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <code>ggpairs</code> plot produced in previous section suggests that the Gaussian assumption is roughly satisfied. In addition, we also need to check if the groups have equal covariance.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="lda-and-qda-iris-dataset.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb23-2"><a href="lda-and-qda-iris-dataset.html#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">colnames</span>(iris)[i],<span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb23-3"><a href="lda-and-qda-iris-dataset.html#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">aggregate</span>(iris[,i],<span class="at">by=</span><span class="fu">list</span>(iris<span class="sc">$</span>Species),var)) <span class="co">#compute variance for each group</span></span>
-<span id="cb23-4"><a href="lda-and-qda-iris-dataset.html#cb23-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="lda-and-qda-iris-dataset.html#cb23-1" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb23-2"><a href="lda-and-qda-iris-dataset.html#cb23-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">colnames</span>(iris)[i],<span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-3"><a href="lda-and-qda-iris-dataset.html#cb23-3" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">aggregate</span>(iris[,i],<span class="at">by=</span><span class="fu">list</span>(iris<span class="sc">$</span>Species),var)) <span class="co">#compute variance for each group</span></span>
+<span id="cb23-4"><a href="lda-and-qda-iris-dataset.html#cb23-4" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Sepal.Length
 ##      Group.1      x
 ## 1     setosa 0.1242
@@ -208,15 +212,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="lda" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> LDA<a href="lda-and-qda-iris-dataset.html#lda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Since there is no parameter to select in LDA or QDA, we only need to split the data into training and test sets.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="lda-and-qda-iris-dataset.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb25-2"><a href="lda-and-qda-iris-dataset.html#cb25-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(iris)</span>
-<span id="cb25-3"><a href="lda-and-qda-iris-dataset.html#cb25-3" aria-hidden="true" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="fu">floor</span>(<span class="fl">0.8</span><span class="sc">*</span>n))</span>
-<span id="cb25-4"><a href="lda-and-qda-iris-dataset.html#cb25-4" aria-hidden="true" tabindex="-1"></a>iris.train <span class="ot">&lt;-</span> iris[ind,]</span>
-<span id="cb25-5"><a href="lda-and-qda-iris-dataset.html#cb25-5" aria-hidden="true" tabindex="-1"></a>iris.test  <span class="ot">&lt;-</span> iris[<span class="sc">-</span>ind,]</span></code></pre></div>
-<p>Next, we implement LDA by using</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="lda-and-qda-iris-dataset.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb26-2"><a href="lda-and-qda-iris-dataset.html#cb26-2" aria-hidden="true" tabindex="-1"></a>iris.lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species<span class="sc">~</span>., <span class="at">data=</span>iris.train)</span>
-<span id="cb26-3"><a href="lda-and-qda-iris-dataset.html#cb26-3" aria-hidden="true" tabindex="-1"></a>iris.lda </span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="lda-and-qda-iris-dataset.html#cb25-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb25-2"><a href="lda-and-qda-iris-dataset.html#cb25-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(iris)</span>
+<span id="cb25-3"><a href="lda-and-qda-iris-dataset.html#cb25-3" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n), <span class="fu">floor</span>(<span class="fl">0.8</span><span class="sc">*</span>n))</span>
+<span id="cb25-4"><a href="lda-and-qda-iris-dataset.html#cb25-4" tabindex="-1"></a>iris.train <span class="ot">&lt;-</span> iris[ind,]</span>
+<span id="cb25-5"><a href="lda-and-qda-iris-dataset.html#cb25-5" tabindex="-1"></a>iris.test  <span class="ot">&lt;-</span> iris[<span class="sc">-</span>ind,]</span></code></pre></div>
+<p>Next, we implement LDA by using the <code>lda</code> function.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="lda-and-qda-iris-dataset.html#cb26-1" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb26-2"><a href="lda-and-qda-iris-dataset.html#cb26-2" tabindex="-1"></a>iris.lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species<span class="sc">~</span>., <span class="at">data=</span>iris.train)</span>
+<span id="cb26-3"><a href="lda-and-qda-iris-dataset.html#cb26-3" tabindex="-1"></a>iris.lda </span></code></pre></div>
 <pre><code>## Call:
 ## lda(Species ~ ., data = iris.train)
 ## 
@@ -241,54 +245,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    LD1    LD2 
 ## 0.9906 0.0094</code></pre>
 <p>Since we have three classes, two (<span class="math inline">\(3-1\)</span>) linear discriminant functions are produced. We could see how the first linear discriminant function separates the three classes by using <code>ldahist</code> function or by using <code>ggplot</code>.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="lda-and-qda-iris-dataset.html#cb28-1" aria-hidden="true" tabindex="-1"></a>iris.pred.tr <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.lda)</span>
-<span id="cb28-2"><a href="lda-and-qda-iris-dataset.html#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ldahist</span>(<span class="at">data =</span> iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>], <span class="at">g=</span>iris.train<span class="sc">$</span>Species)</span></code></pre></div>
-<p><img src="main_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="lda-and-qda-iris-dataset.html#cb29-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Type=</span>iris.train<span class="sc">$</span>Species, <span class="at">lda=</span>iris.pred.tr<span class="sc">$</span>x)</span>
-<span id="cb29-2"><a href="lda-and-qda-iris-dataset.html#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dataset, <span class="fu">aes</span>(<span class="at">x=</span>lda.LD1)) <span class="sc">+</span> </span>
-<span id="cb29-3"><a href="lda-and-qda-iris-dataset.html#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">group=</span>Type, <span class="at">colour=</span>Type, <span class="at">fill=</span>Type), <span class="at">alpha=</span><span class="fl">0.3</span>)</span></code></pre></div>
-<p><img src="main_files/figure-html/unnamed-chunk-25-1.png" width="672" />
-The first linear discriminant is quite effective in separating setosa from the other classes, but less effective in separating versicolor and virginica.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="lda-and-qda-iris-dataset.html#cb28-1" tabindex="-1"></a>iris.pred.tr <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.lda)</span>
+<span id="cb28-2"><a href="lda-and-qda-iris-dataset.html#cb28-2" tabindex="-1"></a><span class="fu">ldahist</span>(<span class="at">data =</span> iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>], <span class="at">g=</span>iris.train<span class="sc">$</span>Species)</span></code></pre></div>
+<p><img src="main_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="lda-and-qda-iris-dataset.html#cb29-1" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Type=</span>iris.train<span class="sc">$</span>Species, <span class="at">lda=</span>iris.pred.tr<span class="sc">$</span>x)</span>
+<span id="cb29-2"><a href="lda-and-qda-iris-dataset.html#cb29-2" tabindex="-1"></a><span class="fu">ggplot</span>(dataset, <span class="fu">aes</span>(<span class="at">x=</span>lda.LD1)) <span class="sc">+</span> </span>
+<span id="cb29-3"><a href="lda-and-qda-iris-dataset.html#cb29-3" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">group=</span>Type, <span class="at">colour=</span>Type, <span class="at">fill=</span>Type), <span class="at">alpha=</span><span class="fl">0.3</span>)</span></code></pre></div>
+<p><img src="main_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>The first linear discriminant is quite effective in separating setosa from the other classes, but less effective in separating versicolor and virginica.</p>
 <p>While <code>R</code> could automatically help us make predictions, let's try to manually create a classification rule using only LD1 based on the figure above.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lda-and-qda-iris-dataset.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The classification rule is manually designed as follows:</span></span>
-<span id="cb30-2"><a href="lda-and-qda-iris-dataset.html#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to virginica  if LD1 &lt; -3.5;</span></span>
-<span id="cb30-3"><a href="lda-and-qda-iris-dataset.html#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to versicolor if -3.5 &lt;= LD1 &lt;= 3;</span></span>
-<span id="cb30-4"><a href="lda-and-qda-iris-dataset.html#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># classify observations to setosa     if LD1 &gt; 3</span></span>
-<span id="cb30-5"><a href="lda-and-qda-iris-dataset.html#cb30-5" aria-hidden="true" tabindex="-1"></a>pred.LD1 <span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="st">&quot;versicolor&quot;</span>,<span class="fu">nrow</span>(iris.train))</span>
-<span id="cb30-6"><a href="lda-and-qda-iris-dataset.html#cb30-6" aria-hidden="true" tabindex="-1"></a>pred.LD1[iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>] <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">3.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;virginica&quot;</span></span>
-<span id="cb30-7"><a href="lda-and-qda-iris-dataset.html#cb30-7" aria-hidden="true" tabindex="-1"></a>pred.LD1[iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>] <span class="sc">&gt;</span>  <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;setosa&quot;</span></span>
-<span id="cb30-8"><a href="lda-and-qda-iris-dataset.html#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pred.LD1<span class="sc">!=</span>iris.train<span class="sc">$</span>Species)</span></code></pre></div>
-<pre><code>## [1] 0.01667</code></pre>
-<p>This shows that we have an error rate of 1.67% on the training data.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="lda-and-qda-iris-dataset.html#cb30-1" tabindex="-1"></a><span class="co"># The classification rule is manually designed as follows:</span></span>
+<span id="cb30-2"><a href="lda-and-qda-iris-dataset.html#cb30-2" tabindex="-1"></a><span class="co"># classify observations to virginica  if LD1 &lt; -3.5;</span></span>
+<span id="cb30-3"><a href="lda-and-qda-iris-dataset.html#cb30-3" tabindex="-1"></a><span class="co"># classify observations to versicolor if -3.5 &lt;= LD1 &lt;= 3;</span></span>
+<span id="cb30-4"><a href="lda-and-qda-iris-dataset.html#cb30-4" tabindex="-1"></a><span class="co"># classify observations to setosa     if LD1 &gt; 3</span></span>
+<span id="cb30-5"><a href="lda-and-qda-iris-dataset.html#cb30-5" tabindex="-1"></a>pred.LD1 <span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="st">&quot;versicolor&quot;</span>,<span class="fu">nrow</span>(iris.train))</span>
+<span id="cb30-6"><a href="lda-and-qda-iris-dataset.html#cb30-6" tabindex="-1"></a>pred.LD1[iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>] <span class="sc">&lt;</span> <span class="sc">-</span><span class="fl">3.5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;virginica&quot;</span></span>
+<span id="cb30-7"><a href="lda-and-qda-iris-dataset.html#cb30-7" tabindex="-1"></a>pred.LD1[iris.pred.tr<span class="sc">$</span>x[,<span class="dv">1</span>] <span class="sc">&gt;</span>  <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;setosa&quot;</span></span>
+<span id="cb30-8"><a href="lda-and-qda-iris-dataset.html#cb30-8" tabindex="-1"></a><span class="fu">mean</span>(pred.LD1<span class="sc">==</span>iris.train<span class="sc">$</span>Species)</span></code></pre></div>
+<pre><code>## [1] 0.9833</code></pre>
+<p>This shows that we have a correct classification rate of 98.3% on the training data.</p>
 <p><em>Challenge: How might you decide the optimal cutting points instead of using <span class="math inline">\(-3.5\)</span> and <span class="math inline">\(3\)</span> in the classification rule above?</em></p>
 <p>Let's now move to using two linear discriminant functions and see if that improves the classification accuracy. First, we could visualise how LD1 and LD2 together separate the three classes by using either of the following two comments</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lda-and-qda-iris-dataset.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(iris.pred.tr$x[,1],iris.pred.tr$x[,2], col=train.data$Species,</span></span>
-<span id="cb32-2"><a href="lda-and-qda-iris-dataset.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#      pch=as.numeric(train.data$Species), xlab=&quot;LD1&quot;, ylab=&quot;LD2&quot;)</span></span>
-<span id="cb32-3"><a href="lda-and-qda-iris-dataset.html#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dataset, <span class="fu">aes</span>(<span class="at">x=</span>lda.LD1, <span class="at">y=</span>lda.LD2)) <span class="sc">+</span> </span>
-<span id="cb32-4"><a href="lda-and-qda-iris-dataset.html#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group=</span>Type, <span class="at">colour=</span>Type, <span class="at">shape=</span>Type))</span></code></pre></div>
-<p><img src="main_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<p>Now let's compute the error rate again, but using both LD1 and LD2.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="lda-and-qda-iris-dataset.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(iris.train<span class="sc">$</span>Species <span class="sc">!=</span> iris.pred.tr<span class="sc">$</span>class)</span></code></pre></div>
-<pre><code>## [1] 0.025</code></pre>
-<p>The error rate even increases slightly compared with using LD1.</p>
-<p>Finally, let's use the built LDA to predict species for test data. The error rate is again 0%, great!</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="lda-and-qda-iris-dataset.html#cb35-1" aria-hidden="true" tabindex="-1"></a>iris.pred.te <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.lda, iris.test) </span>
-<span id="cb35-2"><a href="lda-and-qda-iris-dataset.html#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(iris.test<span class="sc">$</span>Species <span class="sc">!=</span> iris.pred.te<span class="sc">$</span>class)</span></code></pre></div>
-<pre><code>## [1] 0</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="lda-and-qda-iris-dataset.html#cb32-1" tabindex="-1"></a><span class="co"># plot(iris.pred.tr$x[,1],iris.pred.tr$x[,2], col=train.data$Species,</span></span>
+<span id="cb32-2"><a href="lda-and-qda-iris-dataset.html#cb32-2" tabindex="-1"></a><span class="co">#      pch=as.numeric(train.data$Species), xlab=&quot;LD1&quot;, ylab=&quot;LD2&quot;)</span></span>
+<span id="cb32-3"><a href="lda-and-qda-iris-dataset.html#cb32-3" tabindex="-1"></a><span class="fu">ggplot</span>(dataset, <span class="fu">aes</span>(<span class="at">x=</span>lda.LD1, <span class="at">y=</span>lda.LD2)) <span class="sc">+</span> </span>
+<span id="cb32-4"><a href="lda-and-qda-iris-dataset.html#cb32-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group=</span>Type, <span class="at">colour=</span>Type, <span class="at">shape=</span>Type))</span></code></pre></div>
+<p><img src="main_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>Now let's compute the correct classification rate again, but using both LD1 and LD2.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="lda-and-qda-iris-dataset.html#cb33-1" tabindex="-1"></a><span class="fu">mean</span>(iris.train<span class="sc">$</span>Species <span class="sc">==</span> iris.pred.tr<span class="sc">$</span>class)</span></code></pre></div>
+<pre><code>## [1] 0.975</code></pre>
+<p>The correct classification rate even decreases slightly compared with using LD1.</p>
+<p>Finally, let's use the built LDA to predict species for test data. The correct classification rate is 100%, great!</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="lda-and-qda-iris-dataset.html#cb35-1" tabindex="-1"></a>iris.pred.te <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.lda, iris.test) </span>
+<span id="cb35-2"><a href="lda-and-qda-iris-dataset.html#cb35-2" tabindex="-1"></a><span class="fu">mean</span>(iris.test<span class="sc">$</span>Species <span class="sc">==</span> iris.pred.te<span class="sc">$</span>class)</span></code></pre></div>
+<pre><code>## [1] 1</code></pre>
 </div>
 <div id="task-1" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Task<a href="lda-and-qda-iris-dataset.html#task-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<ol style="list-style-type: lower-alpha">
-<li>Implement QDA and compute the test error rate.</li>
-</ol>
+<p>Implement QDA and compute the correct classification rate on the test set.</p>
 <div class="webex-solution">
 <button>
 Solution
 </button>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lda-and-qda-iris-dataset.html#cb37-1" aria-hidden="true" tabindex="-1"></a>iris.qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Species<span class="sc">~</span>., <span class="at">data=</span>iris.train)</span>
-<span id="cb37-2"><a href="lda-and-qda-iris-dataset.html#cb37-2" aria-hidden="true" tabindex="-1"></a>iris.pred.te2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.qda, iris.test)</span>
-<span id="cb37-3"><a href="lda-and-qda-iris-dataset.html#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(iris.test<span class="sc">$</span>Species <span class="sc">!=</span> iris.pred.te2<span class="sc">$</span>class)</span></code></pre></div>
-<pre><code>## [1] 0.03333</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="lda-and-qda-iris-dataset.html#cb37-1" tabindex="-1"></a>iris.qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Species<span class="sc">~</span>., <span class="at">data=</span>iris.train)</span>
+<span id="cb37-2"><a href="lda-and-qda-iris-dataset.html#cb37-2" tabindex="-1"></a>iris.pred.te2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(iris.qda, iris.test)</span>
+<span id="cb37-3"><a href="lda-and-qda-iris-dataset.html#cb37-3" tabindex="-1"></a><span class="fu">mean</span>(iris.test<span class="sc">$</span>Species <span class="sc">==</span> iris.pred.te2<span class="sc">$</span>class)</span></code></pre></div>
+<pre><code>## [1] 0.9667</code></pre>
 </div>
 
 </div>

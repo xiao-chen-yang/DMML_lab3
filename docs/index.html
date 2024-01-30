@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>STATS5099 Data Mining and Machine Learning</title>
   <meta name="description" content="STATS5099 Data Mining and Machine Learning" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
   <meta property="og:title" content="STATS5099 Data Mining and Machine Learning" />
   <meta property="og:type" content="book" />
@@ -117,6 +117,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 <link rel="stylesheet" href="include/webex.css" type="text/css" />
@@ -187,57 +191,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 <p>(Implement steps 1 and 2 for all proposed classifiers and different parameter values in the classifier, e.g. <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN.)</p>
 <ol start="3" style="list-style-type: decimal">
-<li><p>Select the optimal classifier and its parameters (if any) to be the one with the smallest error rate on the validation set.</p></li>
+<li><p>Select the optimal classifier and its parameters (if any) to be the one with the highest correct classification rate (or some other appropriate evaluation metrics) on the validation set.</p></li>
 <li><p>Re-run the selected classifier on the test set to make predictions.</p></li>
 </ol>
-<p>In the case that the data set is small, <span class="math inline">\(K\)</span>-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for <span class="math inline">\(K\)</span> rounds, where in each round, use <span class="math inline">\((K-1)/K\)</span> proportion of data for building the classifier and the remaining <span class="math inline">\(1/K\)</span> proportion of data for evaluating the classifier. The final validation error rate is the mean error rate averaged over <span class="math inline">\(K\)</span> rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4).</p>
+<p>In the case that the data set is small, <span class="math inline">\(K\)</span>-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for <span class="math inline">\(K\)</span> rounds, where in each round, use <span class="math inline">\((K-1)/K\)</span> proportion of data for building the classifier and the remaining <span class="math inline">\(1/K\)</span> proportion of data for evaluating the classifier. The final validation performance is the mean correct classification rate averaged over <span class="math inline">\(K\)</span> rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4).</p>
 <p>The <code>R</code> command for manually splitting the data into training, validation and test sets is given below.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data) <span class="co">#sample size</span></span>
-<span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a>ind1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),        <span class="fu">floor</span>(train.prop <span class="sc">*</span> n)) <span class="co">#train.prop stands for the proportion of data in the training set</span></span>
-<span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a>ind2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n)[<span class="sc">-</span>ind1], <span class="fu">floor</span>(valid.prop <span class="sc">*</span> n)) <span class="co">#valid.prop stands for the proportion of data in the validation set</span></span>
-<span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a>ind3 <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),<span class="fu">c</span>(ind1,ind2))</span>
-<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> data[ind1, ]</span>
-<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a>valid.data <span class="ot">&lt;-</span> data[ind2, ]</span>
-<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a>test.data  <span class="ot">&lt;-</span> data[ind3, ]</span>
-<span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Remark: The floor() function is used to round any number to integers.</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data) <span class="co">#sample size</span></span>
+<span id="cb1-2"><a href="index.html#cb1-2" tabindex="-1"></a>ind1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),        <span class="fu">floor</span>(train.prop <span class="sc">*</span> n)) <span class="co">#train.prop stands for the proportion of data in the training set</span></span>
+<span id="cb1-3"><a href="index.html#cb1-3" tabindex="-1"></a>ind2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n)[<span class="sc">-</span>ind1], <span class="fu">floor</span>(valid.prop <span class="sc">*</span> n)) <span class="co">#valid.prop stands for the proportion of data in the validation set</span></span>
+<span id="cb1-4"><a href="index.html#cb1-4" tabindex="-1"></a>ind3 <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>n),<span class="fu">c</span>(ind1,ind2))</span>
+<span id="cb1-5"><a href="index.html#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="index.html#cb1-6" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> data[ind1, ]</span>
+<span id="cb1-7"><a href="index.html#cb1-7" tabindex="-1"></a>valid.data <span class="ot">&lt;-</span> data[ind2, ]</span>
+<span id="cb1-8"><a href="index.html#cb1-8" tabindex="-1"></a>test.data  <span class="ot">&lt;-</span> data[ind3, ]</span>
+<span id="cb1-9"><a href="index.html#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="index.html#cb1-10" tabindex="-1"></a><span class="co"># Remark: The floor() function is used to round any number to integers.</span></span></code></pre></div>
 <p>There are also built-in functions for data splitting in many <code>R</code> packages. For example, in the <code>SDMTune</code> package.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following codes are non-examinable.</span></span>
-<span id="cb2-2"><a href="index.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SDMtune)</span>
-<span id="cb2-3"><a href="index.html#cb2-3" aria-hidden="true" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">trainValTest</span>(data, <span class="at">val =</span> valid.prop, <span class="at">test =</span> test.prop)</span>
-<span id="cb2-4"><a href="index.html#cb2-4" aria-hidden="true" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> datasets[[<span class="dv">1</span>]]</span>
-<span id="cb2-5"><a href="index.html#cb2-5" aria-hidden="true" tabindex="-1"></a>val.data <span class="ot">&lt;-</span> datasets[[<span class="dv">2</span>]]</span>
-<span id="cb2-6"><a href="index.html#cb2-6" aria-hidden="true" tabindex="-1"></a>test.data <span class="ot">&lt;-</span> datasets[[<span class="dv">3</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" tabindex="-1"></a><span class="co"># The following codes are non-examinable.</span></span>
+<span id="cb2-2"><a href="index.html#cb2-2" tabindex="-1"></a><span class="fu">library</span>(SDMtune)</span>
+<span id="cb2-3"><a href="index.html#cb2-3" tabindex="-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">trainValTest</span>(data, <span class="at">val =</span> valid.prop, <span class="at">test =</span> test.prop)</span>
+<span id="cb2-4"><a href="index.html#cb2-4" tabindex="-1"></a>train.data <span class="ot">&lt;-</span> datasets[[<span class="dv">1</span>]]</span>
+<span id="cb2-5"><a href="index.html#cb2-5" tabindex="-1"></a>val.data <span class="ot">&lt;-</span> datasets[[<span class="dv">2</span>]]</span>
+<span id="cb2-6"><a href="index.html#cb2-6" tabindex="-1"></a>test.data <span class="ot">&lt;-</span> datasets[[<span class="dv">3</span>]]</span></code></pre></div>
 <div id="k-nn" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> k-NN<a href="index.html#k-nn" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Suppose we have training features <code>train.X</code>, training labels <code>train.Y</code>, validation features <code>valid.X</code> and validation labels <code>valid.Y</code>. The <span class="math inline">\(k\)</span>-NN classifier can be built by using</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
-<span id="cb3-2"><a href="index.html#cb3-2" aria-hidden="true" tabindex="-1"></a>valid.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, valid.X, train.Y, <span class="at">k=</span>k) <span class="co">#k is the number of neighbours considered</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" tabindex="-1"></a><span class="fu">library</span>(class)</span>
+<span id="cb3-2"><a href="index.html#cb3-2" tabindex="-1"></a>valid.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, valid.X, train.Y, <span class="at">k=</span>k) <span class="co">#k is the number of neighbours considered</span></span></code></pre></div>
 <p><code>R</code> also have built-in functions for performing 1-NN and leave-one-out cross-validation of <span class="math inline">\(k\)</span>-NN.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1-NN</span></span>
-<span id="cb4-2"><a href="index.html#cb4-2" aria-hidden="true" tabindex="-1"></a>valid.pred<span class="fl">.1</span>NN <span class="ot">&lt;-</span> <span class="fu">knn1</span>(train.X, valid.X, train.Y)</span>
-<span id="cb4-3"><a href="index.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="index.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># leave-one-out cross-validation of k-NN</span></span>
-<span id="cb4-5"><a href="index.html#cb4-5" aria-hidden="true" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="fu">knn.cv</span>(train.X, train.Y, <span class="at">k=</span>k)</span></code></pre></div>
-<p>To decide the value of <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of <span class="math inline">\(k\)</span>-NN on the validation set or using cross-validation for a range of <span class="math inline">\(k\)</span> and select the optimal <span class="math inline">\(k\)</span> that returns the smallest validation error rate.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="index.html#cb4-1" tabindex="-1"></a><span class="co"># 1-NN</span></span>
+<span id="cb4-2"><a href="index.html#cb4-2" tabindex="-1"></a>valid.pred<span class="fl">.1</span>NN <span class="ot">&lt;-</span> <span class="fu">knn1</span>(train.X, valid.X, train.Y)</span>
+<span id="cb4-3"><a href="index.html#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="index.html#cb4-4" tabindex="-1"></a><span class="co"># leave-one-out cross-validation of k-NN</span></span>
+<span id="cb4-5"><a href="index.html#cb4-5" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="fu">knn.cv</span>(train.X, train.Y, <span class="at">k=</span>k)</span></code></pre></div>
+<p>To decide the value of <span class="math inline">\(k\)</span> in <span class="math inline">\(k\)</span>-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of <span class="math inline">\(k\)</span>-NN on the validation set or using cross-validation for a range of <span class="math inline">\(k\)</span> and select the optimal <span class="math inline">\(k\)</span> that returns the highest validation correct classification rate.</p>
 </div>
 <div id="linear-and-quadratic-discriminant-analysis" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> Linear and quadratic discriminant analysis<a href="index.html#linear-and-quadratic-discriminant-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Before implementing LDA and QDA, it is important to check if the assumptions are satisfied, i.e. the feature vectors follow multivariate Gaussian distributions, and additionally for LDA, the covariance matrices are equal across classes. In <code>R</code>, two useful commands for checking these assumptions are:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate variance by group</span></span>
-<span id="cb5-2"><a href="index.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(x, <span class="at">by=</span><span class="fu">list</span>(factor), <span class="at">FUN=</span>var) <span class="co">#&#39;x&#39; is a feature vector and &#39;factor&#39; is used to group features; for classification, the class label can be used as &#39;factor&#39;. </span></span>
-<span id="cb5-3"><a href="index.html#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="index.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># density plots, scatterplot, and Pearson correlation</span></span>
-<span id="cb5-5"><a href="index.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb5-6"><a href="index.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#create plots by groups</span></span>
-<span id="cb5-7"><a href="index.html#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># You could also add the argument &#39;columns&#39; to specify which columns to be plotted, e.g.</span></span>
-<span id="cb5-8"><a href="index.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(data, <span class="at">columns=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#plotting 2nd and 3rd columns</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="index.html#cb5-1" tabindex="-1"></a><span class="co"># calculate variance by group</span></span>
+<span id="cb5-2"><a href="index.html#cb5-2" tabindex="-1"></a><span class="fu">aggregate</span>(x, <span class="at">by=</span><span class="fu">list</span>(factor), <span class="at">FUN=</span>var) <span class="co">#&#39;x&#39; is a feature vector and &#39;factor&#39; is used to group features; for classification, the class label can be used as &#39;factor&#39;. </span></span>
+<span id="cb5-3"><a href="index.html#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="index.html#cb5-4" tabindex="-1"></a><span class="co"># density plots, scatterplot, and Pearson correlation</span></span>
+<span id="cb5-5"><a href="index.html#cb5-5" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb5-6"><a href="index.html#cb5-6" tabindex="-1"></a><span class="fu">ggpairs</span>(data, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#create plots by groups</span></span>
+<span id="cb5-7"><a href="index.html#cb5-7" tabindex="-1"></a><span class="co"># You could also add the argument &#39;columns&#39; to specify which columns to be plotted, e.g.</span></span>
+<span id="cb5-8"><a href="index.html#cb5-8" tabindex="-1"></a><span class="fu">ggpairs</span>(data, <span class="at">columns=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>factor)) <span class="co">#plotting 2nd and 3rd columns</span></span></code></pre></div>
 <p>The syntax for applying LDA and QDA is same as building a regression model:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="index.html#cb6-1" aria-hidden="true" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span>
-<span id="cb6-2"><a href="index.html#cb6-2" aria-hidden="true" tabindex="-1"></a>QDA <span class="ot">&lt;-</span> <span class="fu">qda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="index.html#cb6-1" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span>
+<span id="cb6-2"><a href="index.html#cb6-2" tabindex="-1"></a>QDA <span class="ot">&lt;-</span> <span class="fu">qda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data)</span></code></pre></div>
 <p>By default, the prior probabilities of each class are estimated as the class proportions. It can be specified explicitly by adding the argument <code>prior</code>. For example, assume we have a binary classification problem with equal prior for each class. Then we may change the code to:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1" aria-hidden="true" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data, <span class="at">prior=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="index.html#cb7-1" tabindex="-1"></a>LDA <span class="ot">&lt;-</span> <span class="fu">lda</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, data, <span class="at">prior=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>))</span></code></pre></div>
 
 </div>
 </div>

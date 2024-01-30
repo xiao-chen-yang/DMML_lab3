@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning</title>
   <meta name="description" content="4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
   <meta property="og:title" content="4 Exercise: Haberman | STATS5099 Data Mining and Machine Learning" />
   <meta property="og:type" content="book" />
@@ -117,6 +117,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 <link rel="stylesheet" href="include/webex.css" type="text/css" />
@@ -188,8 +192,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul>
 <p>To load the data into <code>R</code> and convert <code>V4</code> (i.e. class) from numeric variable to categorical variable, use</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="exercise-haberman.html#cb39-1" aria-hidden="true" tabindex="-1"></a>haberman <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;haberman.data&quot;</span>,<span class="at">sep =</span> <span class="st">&quot;,&quot;</span>)</span>
-<span id="cb39-2"><a href="exercise-haberman.html#cb39-2" aria-hidden="true" tabindex="-1"></a>haberman<span class="sc">$</span>V4 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(haberman<span class="sc">$</span>V4)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="exercise-haberman.html#cb39-1" tabindex="-1"></a>haberman <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;haberman.data&quot;</span>,<span class="at">sep =</span> <span class="st">&quot;,&quot;</span>)</span>
+<span id="cb39-2"><a href="exercise-haberman.html#cb39-2" tabindex="-1"></a>haberman<span class="sc">$</span>V4 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(haberman<span class="sc">$</span>V4)</span></code></pre></div>
 <p><strong>QUESTION</strong></p>
 <ol style="list-style-type: lower-alpha">
 <li>Perform exploratory analysis for this data. What have you observed?</li>
@@ -199,13 +203,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 Hint
 </button>
 <p>For numerical summaries, the following may be attempted</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="exercise-haberman.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
-<span id="cb40-2"><a href="exercise-haberman.html#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(haberman)</span>
-<span id="cb40-3"><a href="exercise-haberman.html#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">aggregate</span>(x,<span class="at">by=</span><span class="fu">list</span>(haberman<span class="sc">$</span>V4), var))</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="exercise-haberman.html#cb40-1" tabindex="-1"></a><span class="fu">summary</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb40-2"><a href="exercise-haberman.html#cb40-2" tabindex="-1"></a><span class="fu">skim</span>(haberman)</span>
+<span id="cb40-3"><a href="exercise-haberman.html#cb40-3" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">aggregate</span>(x,<span class="at">by=</span><span class="fu">list</span>(haberman<span class="sc">$</span>V4), var))</span></code></pre></div>
 <p>For graphical summaries, try</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="exercise-haberman.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],<span class="dv">2</span>,hist)</span>
-<span id="cb41-2"><a href="exercise-haberman.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
-<span id="cb41-3"><a href="exercise-haberman.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman, <span class="at">columns=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>V4, <span class="at">alpha=</span><span class="fl">0.2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="exercise-haberman.html#cb41-1" tabindex="-1"></a><span class="fu">apply</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],<span class="dv">2</span>,hist)</span>
+<span id="cb41-2"><a href="exercise-haberman.html#cb41-2" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb41-3"><a href="exercise-haberman.html#cb41-3" tabindex="-1"></a><span class="fu">ggpairs</span>(haberman, <span class="at">columns=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">colour=</span>V4, <span class="at">alpha=</span><span class="fl">0.2</span>))</span></code></pre></div>
 </div>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>Based on your findings in (a), comment on the appropriateness to apply <span class="math inline">\(k\)</span>-NN, LDA and QDA.</li>
@@ -224,10 +228,10 @@ Hint
 <p>Remember that you should still split the data into training and test sets before using cross-validation.</p>
 </div>
 <ol start="4" style="list-style-type: lower-alpha">
-<li>Suppose we use <span class="math inline">\(3\)</span>-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate, and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results.</li>
+<li>Suppose we use <span class="math inline">\(3\)</span>-NN as the classifier and obtain the following prediction results. Calculate sensitivity, specificity, positive prediction rate, negative prediction rate and accuracy, assuming class 1 (i.e. the survival class) is the positive class and class 2 is the negative class. Comment on your results.</li>
 </ol>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="exercise-haberman.html#cb42-1" aria-hidden="true" tabindex="-1"></a>test.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, test.X, train.Y, <span class="at">k=</span><span class="dv">3</span>)</span>
-<span id="cb42-2"><a href="exercise-haberman.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(test.Y, test.pred)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="exercise-haberman.html#cb42-1" tabindex="-1"></a>test.pred <span class="ot">&lt;-</span> <span class="fu">knn</span>(train.X, test.X, train.Y, <span class="at">k=</span><span class="dv">3</span>)</span>
+<span id="cb42-2"><a href="exercise-haberman.html#cb42-2" tabindex="-1"></a><span class="fu">table</span>(test.Y, test.pred)</span></code></pre></div>
 <pre><code>##       test.pred
 ## test.Y  1  2
 ##      1 40  4

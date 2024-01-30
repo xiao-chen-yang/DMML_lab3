@@ -40,11 +40,11 @@ Suppose we have divided the data into training, validation and test sets. Then, 
 
 (Implement steps 1 and 2 for all proposed classifiers and different parameter values in the classifier, e.g. $k$ in $k$-NN.)
 
-3. Select the optimal classifier and its parameters (if any) to be the one with the smallest error rate on the validation set.
+3. Select the optimal classifier and its parameters (if any) to be the one with the highest correct classification rate (or some other appropriate evaluation metrics) on the validation set.
 
 4. Re-run the selected classifier on the test set to make predictions. 
 
-In the case that the data set is small, $K$-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for $K$ rounds, where in each round, use $(K-1)/K$ proportion of data for building the classifier and the remaining $1/K$ proportion of data for evaluating the classifier. The final validation error rate is the mean error rate averaged over $K$ rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4). 
+In the case that the data set is small, $K$-fold cross-validation may be used instead of training and validation split. This essentially means repeating steps 1 and 2 for $K$ rounds, where in each round, use $(K-1)/K$ proportion of data for building the classifier and the remaining $1/K$ proportion of data for evaluating the classifier. The final validation performance is the mean correct classification rate averaged over $K$ rounds. Once the optimal classifier is selected (i.e. step 3), we can proceed to make predictions (i.e. step 4). 
 
 The `R` command for manually splitting the data into training, validation and test sets is given below.
 ```{r eval=FALSE}
@@ -88,7 +88,7 @@ valid.pred.1NN <- knn1(train.X, valid.X, train.Y)
 cv <- knn.cv(train.X, train.Y, k=k)
 ```
 
-To decide the value of $k$ in $k$-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of $k$-NN on the validation set or using cross-validation for a range of $k$ and select the optimal $k$ that returns the smallest validation error rate.  
+To decide the value of $k$ in $k$-NN, we will follow steps 1 and 2 as described above. That is, evaluate the performance of $k$-NN on the validation set or using cross-validation for a range of $k$ and select the optimal $k$ that returns the highest validation correct classification rate.  
 
 ## Linear and quadratic discriminant analysis
 
